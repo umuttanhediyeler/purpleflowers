@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Mor Sümbül Emojisi Sayfası</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0; /* Hafif arka plan için */
+            font-family: sans-serif;
+            overflow-x: hidden; /* Yatay kaydırmayı önle */
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); /* Responsive grid, cihazlara göre otomatik sığdır */
+            gap: 10px; /* Emojiler arası boşluk */
+            padding: 20px;
+            justify-items: center;
+            align-items: center;
+        }
+        .emoji {
+            font-size: 2em; /* Emoji boyutu, cihazlara göre ölçeklenir */
+            line-height: 1;
+        }
+        @media (max-width: 600px) {
+            .emoji {
+                font-size: 1.5em; /* Küçük ekranlar için küçült */
+            }
+            .container {
+                grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container"></div>
+
+    <script>
+        const container = document.getElementById('container');
+        const emoji = '🪻'; // Mor sümbül emojisi (Unicode hyacinth)
+
+        function addEmojis(count = 200) {
+            for (let i = 0; i < count; i++) {
+                const div = document.createElement('div');
+                div.className = 'emoji';
+                div.textContent = emoji;
+                container.appendChild(div);
+            }
+        }
+
+        // İlk yüklemede sayfayı doldur
+        addEmojis(500);
+
+        // Scroll eventi ile sonsuz ekleme
+        let isLoading = false;
+        window.addEventListener('scroll', () => {
+            if (isLoading) return;
+            const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+            if (scrollTop + clientHeight >= scrollHeight - 100) { // Alt kısma yaklaşıldığında
+                isLoading = true;
+                addEmojis(200);
+                isLoading = false;
+            }
+        });
+
+        // Performansı optimize etmek için Intersection Observer (daha modern ve verimli)
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver(entries => {
+                if (entries[0].isIntersecting) {
+                    addEmojis(200);
+                }
+            }, { threshold: 0.1 });
+
+            // Son emojiyi gözlemle
+            setInterval(() => {
+                const lastEmoji = container.lastChild;
+                if (lastEmoji) observer.observe(lastEmoji);
+            }, 1000); // Düzenli kontrol
+        }
+    </script>
+</body>
+</html>
